@@ -1,17 +1,48 @@
 'use client'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 const LoginPage = () => {
+  const router = useRouter()
   const [user, setUser] = React.useState({
     email: '',
     password: '',
   })
-  const handleLogin = () => {}
+  const [buttonDisabled, setButtonDisabled] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.post('/api/users/login', user)
+      console.log('Login success', response.data)
+      if (response.status === 200) {
+        toast.success('Login successful')
+        router.push('/profile')
+      }
+    } catch (error: any) {
+      console.log(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (user.email.length > 0 && user.password.length > 0) {
+      setButtonDisabled(false)
+    } else {
+      setButtonDisabled(true)
+    }
+  }, [user])
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="w-[25%] bg-gray-100 p-8 rounded shadow-md">
-        <h1 className="text-3xl font-bold text-center">Login</h1>
+        <h1 className="text-3xl font-bold text-center">
+          {loading ? 'Processing' : 'Login'}
+        </h1>
         <div className="space-y-4">
           <div className="mt-10">
             <input
@@ -36,8 +67,9 @@ const LoginPage = () => {
             <button
               onClick={handleLogin}
               className="px-4 py-2 border border-gray-300 rounded-md w-full bg-gray-700 text-white"
+              disabled={buttonDisabled}
             >
-              Login
+              {buttonDisabled ? 'No Login' : 'Login'}
             </button>
             <p className="mt-3 text-[12px] text-center">
               Are you new here?{' '}

@@ -83,6 +83,7 @@ const SignupPage = () => {
             <button
               onClick={handleSignup}
               className="px-4 py-2 border border-gray-300 rounded-md w-full bg-gray-700 text-white"
+              disabled={buttonDisabled}
             >
               {buttonDisabled ? 'No signup' : 'Signup'}
             </button>
